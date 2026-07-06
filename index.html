@@ -6,24 +6,11 @@
     <title>コンディション管理 - 選手画面</title>
     <style>
         /* ==========================================
-           デザイン（CSS） - スマホ対応・レスポンシブ
+           デザイン（CSS）
            ========================================== */
-        body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 0; line-height: 1.6; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        header {
-            background-color: #3b82f6; /* 選手用は明るい青 */
-            color: white; padding: 15px 20px; text-align: center;
-            font-size: 20px; font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: sticky; top: 0; z-index: 100;
-        }
+        header { background-color: #3b82f6; color: white; padding: 15px 20px; text-align: center; font-size: 20px; font-weight: bold; position: sticky; top: 0; z-index: 100; }
         .card { background-color: white; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .section-title { font-size: 18px; font-weight: bold; color: #1e3a8a; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; margin-bottom: 15px; margin-top: 0; }
         
@@ -32,11 +19,10 @@
         .form-label-flex label { font-size: 14px; font-weight: bold; color: #4b5563; margin: 0; }
         .emoji-display { font-size: 24px; font-weight: bold; color: #1e40af; }
         
-        input[type="text"], input[type="date"], input[type="number"], textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: #f9fafb; }
-        input:focus, textarea:focus { outline: none; border-color: #3b82f6; background-color: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        select, input[type="text"], input[type="date"], input[type="number"], textarea { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; box-sizing: border-box; font-size: 16px; background-color: #f9fafb; appearance: none;}
+        select:focus, input:focus, textarea:focus { outline: none; border-color: #3b82f6; background-color: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
         textarea { resize: vertical; }
 
-        /* スライダー（つまみ）のデザイン */
         input[type="range"] { width: 100%; height: 8px; background: #e5e7eb; border-radius: 4px; outline: none; -webkit-appearance: none; margin-bottom: 10px; }
         input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #3b82f6; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
@@ -55,12 +41,10 @@
         .status-cloud { background-color: #10b981; color: white; }
         .status-error { background-color: #dc2626; color: white; }
 
-        /* 筋肉痛タグのデザイン */
         .tags-container { display: flex; flex-wrap: wrap; gap: 8px; }
         .tag-btn { background-color: #f3f4f6; border: 1px solid #d1d5db; color: #4b5563; padding: 8px 14px; border-radius: 20px; font-size: 14px; cursor: pointer; transition: all 0.2s; }
         .tag-btn.selected { background-color: #fef08a; border-color: #f59e0b; color: #b45309; font-weight: bold; }
 
-        /* デバッグパネル */
         .debug-panel { background-color: #1e293b; color: #38bdf8; font-family: monospace; font-size: 12px; padding: 15px; border-radius: 8px; margin-top: 20px; margin-bottom: 40px; border-left: 4px solid #f43f5e; display: none; }
         .debug-title { font-weight: bold; color: #f43f5e; margin-bottom: 5px; font-size: 13px; }
     </style>
@@ -68,7 +52,7 @@
 <body>
 
     <header>
-        Team Condition <span id="connection-status" class="status-badge status-local">ローカルモード</span>
+        Team Condition <span id="connection-status" class="status-badge status-local">ローカル</span>
     </header>
 
     <div class="container">
@@ -76,10 +60,23 @@
             
             <div class="card">
                 <h2 class="section-title">基本情報</h2>
-                <div class="form-group"><div class="form-label-flex"><label>選手名 <span style="color:red;">*</span></label></div><input type="text" id="player-name" placeholder="例: 山田 太郎" required></div>
-                <div class="form-group"><div class="form-label-flex"><label>日付 <span style="color:red;">*</span></label></div><input type="date" id="date" required></div>
+                <div class="form-group">
+                    <div class="form-label-flex"><label>選手名 <span style="color:red;">*</span></label></div>
+                    <select id="player-name" required>
+                        <option value="" disabled selected>読み込み中...</option>
+                    </select>
+                    <div id="player-warning" style="font-size: 12px; color: #dc2626; display: none; margin-top: 5px;">
+                        ※監督が名簿に選手を登録すると選択できるようになります。
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="form-label-flex"><label>日付 <span style="color:red;">*</span></label></div>
+                    <input type="date" id="date" required>
+                </div>
             </div>
 
+            <!-- コンディション情報を大幅に強化 -->
             <div class="card">
                 <h2 class="section-title">コンディション</h2>
                 
@@ -91,7 +88,19 @@
                     <input type="range" id="fatigue" min="1" max="10" value="1" step="1">
                 </div>
 
+                <!-- 【追加】ストレス -->
+                <div class="form-group">
+                    <div class="form-label-flex">
+                        <label>ストレス (1:リラックス 〜 10:重圧)</label>
+                        <div class="emoji-display" id="stress-display">😌 1</div>
+                    </div>
+                    <input type="range" id="stress" min="1" max="10" value="1" step="1">
+                </div>
+
+                <!-- 【追加】心拍数・歩数・睡眠 -->
                 <div class="form-group"><div class="form-label-flex"><label>睡眠時間 (時間)</label></div><input type="number" id="sleep" step="0.5" placeholder="例: 7.5"></div>
+                <div class="form-group"><div class="form-label-flex"><label>起床時心拍数 (bpm)</label></div><input type="number" id="heart-rate" placeholder="例: 60"></div>
+                <div class="form-group"><div class="form-label-flex"><label>歩数 (歩)</label></div><input type="number" id="steps" placeholder="例: 8000"></div>
                 
                 <div class="form-group">
                     <div class="form-label-flex"><label>筋肉痛・張りのある部位（複数選択可）</label></div>
@@ -102,6 +111,9 @@
                         <button type="button" class="tag-btn" data-part="臀部(お尻)">臀部(お尻)</button>
                         <button type="button" class="tag-btn" data-part="腰">腰</button>
                         <button type="button" class="tag-btn" data-part="肩・背中">肩・背中</button>
+                        <!-- 【追加】腕・胸筋 -->
+                        <button type="button" class="tag-btn" data-part="腕">腕</button>
+                        <button type="button" class="tag-btn" data-part="胸筋">胸筋</button>
                     </div>
                 </div>
 
@@ -153,14 +165,13 @@
         </div>
     </div>
 
+    <!-- Firebase Classic -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-        // ⭐️【最重要】ここにFirebaseの設定を貼り付けます ⭐️
-        // ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+        // ⭐️【最重要】ここにFirebaseの設定を貼り付けてください ⭐️
         const myFirebaseConfig = {
   apiKey: "AIzaSyAQoESOlZIGJfOgfIwpkL0r0YcYu4tl8ZQ",
   authDomain: "team-conditioning-controling.firebaseapp.com",
@@ -170,10 +181,10 @@
   appId: "1:330203393971:web:f47b8e66137d0fce8b65c6",
   measurementId: "G-SCMMTXKZ37"
 };
-        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
         let db = null;
         let colRef = null;
+        let playersColRef = null;
 
         async function initFirebase() {
             const statusBadge = document.getElementById('connection-status');
@@ -190,9 +201,22 @@
                     await firebase.auth().signInAnonymously();
 
                     colRef = db.collection('team_condition_logs');
+                    playersColRef = db.collection('team_players');
+
                     statusBadge.textContent = 'クラウド同期中';
                     statusBadge.className = 'status-badge status-cloud';
                     debugPanel.style.display = 'none';
+
+                    playersColRef.onSnapshot(snapshot => {
+                        const players = [];
+                        snapshot.forEach(doc => players.push({name: doc.data().name, createdAt: doc.data().createdAt}));
+                        players.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+                        updatePlayerSelect(players);
+                    });
+
+                } else {
+                    console.log("ローカルモード");
+                    loadLocalPlayers();
                 }
             } catch (error) {
                 console.error("Firebaseの接続エラー:", error);
@@ -200,7 +224,34 @@
                 statusBadge.className = 'status-badge status-error';
                 debugPanel.style.display = 'block';
                 debugMessage.innerHTML = `<b>エラー:</b> ${error.message}`;
+                loadLocalPlayers(); 
             }
+        }
+
+        function updatePlayerSelect(players) {
+            const select = document.getElementById('player-name');
+            const warning = document.getElementById('player-warning');
+            const currentVal = select.value; 
+            
+            select.innerHTML = '<option value="" disabled selected>名前を選択してください ▼</option>';
+            
+            if(players.length === 0) {
+                warning.style.display = 'block'; 
+            } else {
+                warning.style.display = 'none';
+                players.forEach(p => {
+                    const option = document.createElement('option');
+                    option.value = p.name;
+                    option.textContent = p.name;
+                    if(p.name === currentVal) option.selected = true;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        function loadLocalPlayers() {
+            const players = JSON.parse(localStorage.getItem('team_players') || '[]');
+            updatePlayerSelect(players);
         }
 
         initFirebase();
@@ -211,6 +262,13 @@
             if (val <= 6) return "😐";
             if (val <= 8) return "🥵";
             return "💀";
+        }
+
+        function getEmojiForStress(val) {
+            if (val <= 3) return "😌";
+            if (val <= 6) return "😐";
+            if (val <= 8) return "😫";
+            return "🤯";
         }
 
         function getEmojiForRPE(val) {
@@ -250,12 +308,19 @@
             
             const fatigueSlider = document.getElementById('fatigue');
             const fatigueDisplay = document.getElementById('fatigue-display');
+            const stressSlider = document.getElementById('stress');
+            const stressDisplay = document.getElementById('stress-display');
             const rpeSlider = document.getElementById('rpe');
             const rpeDisplay = document.getElementById('rpe-display');
 
             fatigueSlider.addEventListener('input', function() {
                 const val = parseInt(this.value);
                 fatigueDisplay.textContent = `${getEmojiForFatigue(val)} ${val}`;
+            });
+
+            stressSlider.addEventListener('input', function() {
+                const val = parseInt(this.value);
+                stressDisplay.textContent = `${getEmojiForStress(val)} ${val}`;
             });
 
             rpeSlider.addEventListener('input', function() {
@@ -311,7 +376,10 @@
                     playerName: document.getElementById('player-name').value,
                     date: document.getElementById('date').value,
                     fatigue: fatigueSlider.value,
+                    stress: stressSlider.value, // 【追加】ストレス
                     sleep: document.getElementById('sleep').value,
+                    heartRate: document.getElementById('heart-rate').value, // 【追加】心拍数
+                    steps: document.getElementById('steps').value, // 【追加】歩数
                     soreness: selectedSoreness.join(', '), 
                     injury: document.getElementById('injury').value,
                     duration: document.getElementById('duration').value,
@@ -342,12 +410,13 @@
                     const savedDate = document.getElementById('date').value;
                     form.reset();
                     
-                    document.getElementById('player-name').value = savedName;
+                    document.getElementById('player-name').value = savedName; 
                     document.getElementById('date').value = savedDate;
                     
                     selectedSoreness = [];
                     document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('selected'));
                     fatigueDisplay.textContent = `😃 1`;
+                    stressDisplay.textContent = `😌 1`; // ストレスもリセット
                     rpeDisplay.textContent = `😐 5.0`;
                     
                     calculateLoad(); calculateRsi(); calculateFv();
